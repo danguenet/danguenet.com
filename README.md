@@ -1,43 +1,66 @@
-# Astro Starter Kit: Minimal
+# danguenet.com
+
+Source for [danguenet.com](https://danguenet.com), Daniel Guenet's personal website about building practical go-to-market systems.
+
+![danguenet.com — Building better GTM systems](public/social-card.png)
+
+## Stack
+
+- [Astro](https://astro.build/) for the static site
+- [Tailwind CSS](https://tailwindcss.com/) for shared design primitives
+- [Motion](https://motion.dev/) for progressive animation
+- Canvas for the interactive solar-system hero
+- Playwright and axe-core for browser and accessibility checks
+
+## Local development
+
+Requirements: Node.js 22.22.2 or newer and pnpm 10.30.3.
 
 ```sh
-pnpm create astro@latest -- --template minimal
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The development server starts at `http://localhost:4321`.
 
-## 🚀 Project Structure
+## Quality checks
 
-Inside of your Astro project, you'll see the following folders and files:
+```sh
+pnpm verify
+```
+
+The verification pipeline checks formatting, lint rules, Astro and TypeScript diagnostics, browser behavior, automated accessibility rules, and the production build. Browser tests require Chromium; install it once with:
+
+```sh
+pnpm exec playwright install chromium
+```
+
+## Useful commands
+
+| Command                | Purpose                                                       |
+| ---------------------- | ------------------------------------------------------------- |
+| `pnpm dev`             | Start the local development server                            |
+| `pnpm build`           | Create the production build in `dist/`                        |
+| `pnpm preview`         | Preview the production build locally                          |
+| `pnpm verify`          | Run formatting, linting, diagnostics, tests, and build checks |
+| `pnpm assets:generate` | Regenerate PNG assets from their SVG sources                  |
+
+## Project structure
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+src/components/   Interactive visual components
+src/layouts/      Shared document layout and metadata
+src/pages/        Site routes
+src/styles/       Global styles
+public/           Static public assets
+scripts/          Repeatable brand-asset generation
+tests/            Browser and accessibility tests
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Deployment
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+`pnpm build` writes the static production site to `dist/`. The canonical production URL is configured in `astro.config.mjs`.
 
-Any static assets, like images, can be placed in the `public/` directory.
+## License
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`             | Installs dependencies                            |
-| `pnpm dev`             | Starts local dev server at `localhost:4321`      |
-| `pnpm build`           | Build your production site to `./dist/`          |
-| `pnpm preview`         | Preview your build locally, before deploying     |
-| `pnpm astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `pnpm astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+This repository is public for reference, but it is not open source. Copyright © 2026 Daniel Guenet. All rights reserved. See [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

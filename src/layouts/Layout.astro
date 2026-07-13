@@ -1,0 +1,127 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+}
+
+const {
+  title = 'Daniel Guenet | GTM Systems Builder',
+  description = 'Daniel Guenet builds practical GTM systems that connect strategy, workflows, data, automation, and AI so revenue teams can scale with clarity.',
+  image = '/social-card.png',
+  imageAlt = 'Daniel Guenet — Building better GTM systems.',
+} = Astro.props;
+
+const siteUrl = Astro.site ?? new URL('https://danguenet.com');
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl);
+const socialImageUrl = new URL(image, siteUrl);
+const structuredData = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  '@id': `${canonicalUrl.href}#profile`,
+  url: canonicalUrl.href,
+  name: title,
+  description,
+  mainEntity: {
+    '@type': 'Person',
+    '@id': `${siteUrl.href}#person`,
+    name: 'Daniel Guenet',
+    alternateName: 'Dan Guenet',
+    url: siteUrl.href,
+    jobTitle: 'GTM Systems Builder',
+    sameAs: [
+      'https://www.linkedin.com/in/danguenet/',
+      'https://github.com/danguenet',
+    ],
+    knowsAbout: [
+      'Go-to-market strategy',
+      'Revenue operations',
+      'Workflow design',
+      'Data and measurement',
+      'Automation and artificial intelligence',
+    ],
+  },
+}).replaceAll('<', '\\u003c');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#06100f" />
+    <script is:inline>
+      (() => {
+        const storageKey = 'theme';
+        const storedTheme = (() => {
+          try {
+            return localStorage.getItem(storageKey);
+          } catch {
+            return null;
+          }
+        })();
+        const prefersDark = window.matchMedia(
+          '(prefers-color-scheme: dark)',
+        ).matches;
+        const theme =
+          storedTheme === 'light' || storedTheme === 'dark'
+            ? storedTheme
+            : prefersDark
+              ? 'dark'
+              : 'light';
+
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-45QGY2KT68"
+      is:inline></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        window.dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+
+      gtag('config', 'G-45QGY2KT68');
+    </script>
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="Daniel Guenet" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" sizes="any" />
+    <link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content="Daniel Guenet" />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
+    <meta name="twitter:image:alt" content={imageAlt} />
+    <script is:inline type="application/ld+json" set:html={structuredData} />
+  </head>
+  <body
+    class="min-h-screen bg-[var(--color-page)] text-[var(--color-ink)] antialiased"
+  >
+    <slot />
+  </body>
+</html>

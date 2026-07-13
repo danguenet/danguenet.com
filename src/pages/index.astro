@@ -1,17 +1,1155 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import SolarSystem from '../components/SolarSystem.astro';
+import { faGithub, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
 
+const githubPath = faGithub.icon[4] as string;
+const linkedinPath = faLinkedinIn.icon[4] as string;
+
+const steps = [
+  {
+    number: '01',
+    short: 'Understand',
+    label: 'Understand the problem',
+    detail: 'Separate the root cause from the visible symptoms.',
+  },
+  {
+    number: '02',
+    short: 'Align',
+    label: 'Align on the outcome',
+    detail: 'Define the desired result, constraints, and measures of success.',
+  },
+  {
+    number: '03',
+    short: 'Map',
+    label: 'Map the system',
+    detail:
+      'Show how people, decisions, data, tools, and dependencies interact.',
+  },
+  {
+    number: '04',
+    short: 'Design',
+    label: 'Design the solution',
+    detail:
+      'Define the future workflow, operating rules, and supporting technology.',
+  },
+  {
+    number: '05',
+    short: 'Build',
+    label: 'Build and deploy',
+    detail:
+      'Implement the solution, enable the people involved, and establish ownership.',
+  },
+  {
+    number: '06',
+    short: 'Improve',
+    label: 'Improve continuously',
+    detail:
+      'Measure performance, identify friction, and refine the system over time.',
+  },
+] as const;
+
+const capabilities = [
+  {
+    number: '01',
+    name: 'Strategy and direction',
+    description:
+      'Turn market context and ambition into clear priorities, outcomes, and ownership.',
+    signals: ['Positioning', 'ICP', 'Success metrics'],
+  },
+  {
+    number: '02',
+    name: 'Workflows and operations',
+    description:
+      'Design how people, decisions, and work move across the revenue team.',
+    signals: ['Lifecycle', 'Process', 'Enablement'],
+  },
+  {
+    number: '03',
+    name: 'Data and measurement',
+    description:
+      'Create trustworthy signals that show what is working, what is not, and where to act.',
+    signals: ['Data quality', 'Reporting', 'Analytics'],
+  },
+  {
+    number: '04',
+    name: 'Automation and AI',
+    description:
+      'Connect tools and automate work where speed, consistency, and context matter.',
+    signals: ['Workflows', 'Integrations', 'AI systems'],
+  },
+  {
+    number: '05',
+    name: 'Execution and learning',
+    description:
+      'Build operating rhythms and feedback loops that improve performance over time.',
+    signals: ['Prioritization', 'Launches', 'Feedback loops'],
+  },
+] as const;
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout
+  title="Daniel Guenet | GTM Systems Builder"
+  description="Daniel Guenet builds practical GTM systems that connect strategy, workflows, data, automation, and AI so revenue teams can scale with clarity."
+>
+  <div class="site-shell" id="top">
+    <header class="site-header" data-enter>
+      <span class="wordmark">Daniel Guenet</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <SolarSystem />
+
+        <div class="hero-copy">
+          <p class="eyebrow" data-enter><span></span> GTM system builder</p>
+          <h1 data-enter>
+            I build systems that help GTM teams scale<span>.</span>
+          </h1>
+          <p class="hero-lede" data-enter>
+            I turn GTM strategy into practical systems that improve speed,
+            visibility, and execution across the revenue team.
+          </p>
+          <div class="hero-links" data-enter>
+            <a
+              href="https://www.linkedin.com/in/danguenet/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg viewBox="0 0 448 512" aria-hidden="true"
+                ><path d={linkedinPath} fill="currentColor"></path></svg
+              >
+              LinkedIn
+            </a>
+            <a
+              href="https://github.com/danguenet"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg viewBox="0 0 496 512" aria-hidden="true"
+                ><path d={githubPath} fill="currentColor"></path></svg
+              >
+              GitHub
+            </a>
+          </div>
+        </div>
+
+        <div class="cycle-console" data-cycle-console data-enter>
+          <div class="cycle-stage">
+            <div class="cycle-wheel" data-cycle-wheel style="--counter: 0deg;">
+              <div class="cycle-ring" aria-hidden="true"></div>
+              {
+                steps.map((step, index) => (
+                  <button
+                    class="cycle-node"
+                    type="button"
+                    style={`--angle: ${index * 60}deg;`}
+                    data-cycle-node
+                    data-index={index}
+                    data-active={index === 0 ? 'true' : 'false'}
+                    data-number={step.number}
+                    data-label={step.label}
+                    data-detail={step.detail}
+                    aria-label={`Select step ${step.number}: ${step.label}`}
+                    aria-pressed={index === 0 ? 'true' : 'false'}
+                  >
+                    <span class="node-inner">
+                      <small>{step.number}</small>
+                      <strong>{step.short}</strong>
+                    </span>
+                  </button>
+                ))
+              }
+            </div>
+
+            <button
+              class="cycle-core"
+              type="button"
+              data-cycle-core
+              aria-label="Advance to the next GTM system step"
+            >
+              <span data-active-number>01</span>
+              <strong data-active-label>Understand the problem</strong>
+              <small data-active-detail
+                >Separate the root cause from the visible symptoms.</small
+              >
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="perspective" id="about">
+        <div class="section-shell">
+          <p class="eyebrow dark-eyebrow" data-reveal>
+            <span></span> The future
+          </p>
+          <div class="perspective-grid">
+            <blockquote data-reveal>
+              <span>The next 10 years</span>
+              <span>will belong to</span>
+              <em>system builders.</em>
+            </blockquote>
+            <div class="perspective-copy" data-reveal>
+              <p>
+                AI has made building faster and more accessible. The advantage
+                will belong to people who can connect tools, data, workflows,
+                and decisions into systems that work together.
+              </p>
+              <p>
+                GTM should be treated as a network of connected systems. A
+                campaign is a system. Identifying at-risk opportunities is a
+                system. Turning customer conversations into action across
+                product, marketing, and sales is a system.
+              </p>
+            </div>
+          </div>
+
+          <div class="principles" data-reveal>
+            <div>
+              <span>01</span><strong>See the whole</strong><p>
+                Understand how each decision and workflow affects the wider GTM
+                system.
+              </p>
+            </div>
+            <div>
+              <span>02</span><strong>Connect the parts</strong><p>
+                Bring people, data, tools, and processes together around a
+                shared outcome.
+              </p>
+            </div>
+            <div>
+              <span>03</span><strong>Build for learning</strong><p>
+                Create feedback loops that help every system adapt and improve
+                over time.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="systems" id="systems">
+        <div class="section-shell">
+          <div class="systems-header">
+            <div data-reveal>
+              <p class="eyebrow"><span></span> The systems</p>
+              <h2>Building the systems<br /> behind better GTM.</h2>
+            </div>
+            <p data-reveal>
+              Effective GTM isn’t one system. It’s a connected set of decisions,
+              workflows, data, tools, and feedback loops. I work across five
+              layers to make the whole motion clearer, faster, and more
+              effective.
+            </p>
+          </div>
+
+          <div class="capability-list">
+            {
+              capabilities.map((capability) => (
+                <article class="capability-row" data-reveal>
+                  <span class="capability-number">{capability.number}</span>
+                  <h3>{capability.name}</h3>
+                  <p>{capability.description}</p>
+                  <ul>
+                    {capability.signals.map((signal) => (
+                      <li>{signal}</li>
+                    ))}
+                  </ul>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <section class="closing">
+        <div class="section-shell" data-reveal>
+          <p class="eyebrow dark-eyebrow"><span></span> The Impact</p>
+          <p class="closing-line">
+            People <br class="closing-mobile-break" /> aligned.<br />
+            Work <br class="closing-mobile-break" /> connected.<br />
+            <em>Always <br class="closing-mobile-break" /> improving.</em>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="section-shell footer-grid">
+        <div><strong>Daniel Guenet</strong><span>GTM system builder</span></div>
+        <p>Making GTM clearer, faster, and more effective.</p>
+        <nav aria-label="Footer navigation">
+          <a
+            href="https://www.linkedin.com/in/danguenet/"
+            target="_blank"
+            rel="noopener noreferrer">LinkedIn</a
+          >
+          <a
+            href="https://github.com/danguenet"
+            target="_blank"
+            rel="noopener noreferrer">GitHub</a
+          >
+          <a href="#top">Back to top</a>
+        </nav>
+      </div>
+    </footer>
+  </div>
+
+  <style>
+    :global(:root) {
+      --night: #06100f;
+      --night-soft: #0a1715;
+      --ink: #f2efe8;
+      --muted: #98a6a1;
+      --teal: #5ee6cf;
+      --line: rgba(139, 196, 185, 0.18);
+      --paper: #eeece5;
+      --paper-ink: #131817;
+      --paper-muted: #5f6965;
+      --display: Georgia, 'Times New Roman', serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    :global(*) {
+      box-sizing: border-box;
+    }
+    :global(html) {
+      scroll-behavior: smooth;
+    }
+    :global(body) {
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--night);
+    }
+
+    .site-shell {
+      min-height: 100vh;
+      overflow-x: clip;
+      background: var(--night);
+      color: var(--ink);
+    }
+    .section-shell,
+    .site-header {
+      width: min(100% - 3rem, 86rem);
+      margin-inline: auto;
+    }
+
+    .site-header {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      min-height: 5.5rem;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .wordmark {
+      color: var(--ink);
+      font-size: 0.9rem;
+      font-weight: 750;
+      text-decoration: none;
+    }
+    .hero {
+      position: relative;
+      display: grid;
+      width: 100%;
+      min-height: calc(100vh - 5.5rem);
+      overflow: hidden;
+      grid-template-columns: minmax(0, 0.88fr) minmax(32rem, 1.12fr);
+      gap: clamp(3rem, 6vw, 6rem);
+      align-items: center;
+      padding: 4rem max(1.5rem, calc((100vw - 86rem) / 2)) 6rem;
+      isolation: isolate;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 3;
+    }
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin: 0 0 1.4rem;
+      color: var(--teal);
+      font: 700 0.66rem/1.2 var(--mono);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .eyebrow span {
+      width: 0.42rem;
+      height: 0.42rem;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 0.75rem var(--teal);
+    }
+    .dark-eyebrow {
+      color: #0a6d60;
+    }
+    .dark-eyebrow span {
+      background: #0a6d60;
+      box-shadow: none;
+    }
+
+    h1 {
+      max-width: 8.8ch;
+      margin: 0;
+      font: 400 clamp(4.1rem, 6.8vw, 7rem)/0.9 var(--display);
+      letter-spacing: -0.065em;
+    }
+    h1 > span {
+      color: var(--teal);
+    }
+    .hero-lede {
+      max-width: 34rem;
+      margin: 2rem 0 0;
+      color: #b6c0bc;
+      font-size: 1.04rem;
+      line-height: 1.75;
+    }
+    .hero-links {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 2rem;
+    }
+    .hero-links a {
+      display: inline-flex;
+      min-height: 3rem;
+      align-items: center;
+      gap: 0.55rem;
+      border: 1px solid var(--line);
+      border-radius: 0.35rem;
+      padding: 0 0.95rem;
+      color: var(--ink);
+      font: 650 0.7rem/1 var(--mono);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      transition:
+        border-color 180ms ease,
+        color 180ms ease,
+        transform 180ms ease;
+    }
+    .hero-links a:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+      transform: translateY(-2px);
+    }
+    .hero-links svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .cycle-console {
+      position: relative;
+      z-index: 3;
+      min-width: 0;
+    }
+    .cycle-stage {
+      position: relative;
+      min-height: 36rem;
+    }
+    .cycle-wheel {
+      --radius: 13.6rem;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 29rem;
+      aspect-ratio: 1;
+      transform: translate(-50%, -50%) rotate(0deg);
+      transform-origin: center;
+      transition: transform 820ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .cycle-ring {
+      position: absolute;
+      inset: 12%;
+      border: 1px solid rgba(117, 210, 192, 0.32);
+      border-radius: 50%;
+      box-shadow:
+        inset 0 0 4rem rgba(61, 218, 190, 0.05),
+        0 0 5rem rgba(61, 218, 190, 0.05);
+    }
+    .cycle-ring::after {
+      position: absolute;
+      inset: 18%;
+      border: 1px solid rgba(117, 210, 192, 0.12);
+      border-radius: 50%;
+      content: '';
+    }
+    .cycle-ring::after {
+      inset: 36%;
+      border-color: rgba(117, 210, 192, 0.18);
+    }
+    .cycle-node {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5.5rem;
+      height: 5.5rem;
+      border: 1px solid rgba(127, 206, 192, 0.34);
+      border-radius: 50%;
+      background: #091513;
+      color: var(--muted);
+      cursor: pointer;
+      transform: translate(-50%, -50%) rotate(var(--angle))
+        translateY(calc(var(--radius) * -1));
+      transform-origin: center;
+      transition:
+        border-color 220ms ease,
+        background 220ms ease,
+        box-shadow 220ms ease,
+        opacity 220ms ease;
+    }
+    .node-inner {
+      display: grid;
+      place-items: center;
+      gap: 0.25rem;
+      transform: rotate(calc(var(--counter) - var(--angle)));
+      transition: transform 820ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .node-inner small {
+      color: var(--teal);
+      font: 750 0.62rem/1 var(--mono);
+    }
+    .node-inner strong {
+      color: var(--ink);
+      font: 750 0.66rem/1 var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .cycle-node[data-active='true'] {
+      border-color: var(--teal);
+      background: #0d211d;
+      box-shadow:
+        0 0 0 0.45rem rgba(94, 230, 207, 0.08),
+        0 0 2rem rgba(94, 230, 207, 0.24);
+    }
+    .cycle-node[data-complete='true']:not([data-active='true']) {
+      opacity: 0.7;
+    }
+    .cycle-core {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      z-index: 3;
+      display: flex;
+      width: 12.5rem;
+      min-height: 12.5rem;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(117, 210, 192, 0.38);
+      border-radius: 50%;
+      background: #07120f;
+      padding: 1.35rem;
+      color: var(--ink);
+      text-align: center;
+      transform: translate(-50%, -50%);
+      box-shadow:
+        0 0 0 1rem rgba(94, 230, 207, 0.025),
+        0 0 4rem rgba(94, 230, 207, 0.12);
+      cursor: pointer;
+    }
+    .cycle-core > span {
+      color: var(--teal);
+      font: 750 0.67rem/1 var(--mono);
+    }
+    .cycle-core > strong {
+      max-width: 10rem;
+      margin-top: 0.55rem;
+      font-size: 0.85rem;
+      line-height: 1.2;
+    }
+    .cycle-core > small {
+      max-width: 9.5rem;
+      margin-top: 0.55rem;
+      color: var(--muted);
+      font-size: 0.67rem;
+      line-height: 1.4;
+    }
+    .perspective {
+      background: var(--paper);
+      padding: 8rem 0 0;
+      color: var(--paper-ink);
+    }
+    .perspective-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(4rem, 7vw, 7rem);
+      align-items: start;
+    }
+    blockquote {
+      margin: 0;
+      font: 400 clamp(3.5rem, 5.7vw, 5.75rem)/1.02 var(--display);
+      letter-spacing: -0.055em;
+    }
+    blockquote span,
+    blockquote em {
+      display: block;
+      white-space: nowrap;
+    }
+    blockquote em {
+      color: #0c7768;
+      font-weight: 400;
+    }
+    .perspective-copy {
+      display: grid;
+      width: 100%;
+      max-width: 35rem;
+      gap: 1.25rem;
+      color: var(--paper-muted);
+      font-size: clamp(1rem, 0.85vw, 1.1rem);
+      line-height: 1.75;
+    }
+    .perspective-copy p {
+      margin: 0;
+    }
+    .perspective-copy p:first-child {
+      color: var(--paper-ink);
+      font-weight: 650;
+    }
+    .principles {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: 7rem;
+      border-top: 1px solid rgba(19, 24, 23, 0.16);
+    }
+    .principles > div {
+      min-height: 13rem;
+      border-right: 1px solid rgba(19, 24, 23, 0.16);
+      padding: 2rem 2rem 2.5rem 0;
+    }
+    .principles > div + div {
+      padding-left: 2rem;
+    }
+    .principles > div:last-child {
+      border-right: 0;
+    }
+    .principles span {
+      color: #0c7768;
+      font: 750 0.65rem/1 var(--mono);
+    }
+    .principles strong {
+      display: block;
+      margin-top: 1.1rem;
+      font: 400 2rem/1 var(--display);
+    }
+    .principles p {
+      max-width: 19rem;
+      margin: 1rem 0 0;
+      color: var(--paper-muted);
+      line-height: 1.6;
+    }
+
+    .systems {
+      padding: 8rem 0 7rem;
+    }
+    .systems-header {
+      display: grid;
+      grid-template-columns: 1fr 24rem;
+      gap: 4rem;
+      align-items: end;
+      margin-bottom: 4.5rem;
+    }
+    .systems-header h2 {
+      margin: 0;
+      font: 400 clamp(3.6rem, 5.5vw, 6rem)/0.98 var(--display);
+      letter-spacing: -0.055em;
+    }
+    .systems-header > p {
+      margin: 0 0 0.35rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .capability-list {
+      border-top: 1px solid var(--line);
+    }
+    .capability-row {
+      display: grid;
+      grid-template-columns:
+        3rem minmax(13rem, 0.6fr) minmax(20rem, 1fr)
+        minmax(15rem, 0.65fr);
+      gap: 2rem;
+      align-items: center;
+      min-height: 8.25rem;
+      border-bottom: 1px solid var(--line);
+      transition:
+        background 180ms ease,
+        padding 180ms ease;
+    }
+    .capability-row:hover {
+      background: rgba(94, 230, 207, 0.035);
+      padding-inline: 1rem;
+    }
+    .capability-number {
+      color: var(--teal);
+      font: 750 0.65rem/1 var(--mono);
+    }
+    .capability-row h3 {
+      margin: 0;
+      font: 400 1.75rem/1.1 var(--display);
+    }
+    .capability-row > p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.65;
+    }
+    .capability-row ul {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 0.45rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .capability-row li {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.45rem 0.7rem;
+      color: var(--muted);
+      font: 650 0.57rem/1 var(--mono);
+      letter-spacing: 0.04em;
+    }
+
+    .closing {
+      background: var(--paper);
+      padding: 8rem 0;
+      color: var(--paper-ink);
+    }
+    .closing-line {
+      max-width: 14ch;
+      margin: 0 auto;
+      font: 400 clamp(4rem, 7.2vw, 8rem)/0.95 var(--display);
+      letter-spacing: -0.06em;
+      text-align: center;
+    }
+    .closing-mobile-break {
+      display: none;
+    }
+    .closing-line em {
+      color: #0c7768;
+      font-weight: 400;
+    }
+    footer {
+      background: var(--night);
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+      border-top: 1px solid var(--line);
+      padding: 2.75rem 0;
+    }
+    .footer-grid > div {
+      display: grid;
+      gap: 0.35rem;
+    }
+    .footer-grid > div span,
+    .footer-grid > p,
+    .footer-grid nav {
+      color: var(--muted);
+      font: 600 0.62rem/1.6 var(--mono);
+      letter-spacing: 0.05em;
+    }
+    .footer-grid > p {
+      margin: 0;
+      text-align: center;
+    }
+    .footer-grid nav {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1.25rem;
+    }
+    .footer-grid a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .footer-grid a:hover {
+      color: var(--teal);
+    }
+
+    :global(a:focus-visible),
+    :global(button:focus-visible),
+    :global(summary:focus-visible) {
+      outline: 2px solid var(--teal);
+      outline-offset: 4px;
+    }
+
+    @media (max-width: 1050px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.9fr);
+        gap: clamp(1rem, 3vw, 2rem);
+        padding-top: 4rem;
+      }
+      .hero-copy {
+        max-width: 48rem;
+      }
+      .cycle-console {
+        width: min(100%, 45rem);
+        margin-inline: auto;
+      }
+      .cycle-stage {
+        min-height: clamp(25rem, 48vw, 31rem);
+      }
+      .cycle-wheel {
+        --radius: clamp(8.5rem, 18vw, 11rem);
+        width: clamp(19rem, 40vw, 24rem);
+      }
+      .cycle-node {
+        width: clamp(4.25rem, 8vw, 5rem);
+        height: clamp(4.25rem, 8vw, 5rem);
+      }
+      .cycle-core {
+        width: clamp(9.25rem, 17vw, 11rem);
+        min-height: clamp(9.25rem, 17vw, 11rem);
+      }
+      .perspective-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+      .perspective-copy {
+        max-width: 42rem;
+      }
+      .systems-header {
+        grid-template-columns: 1fr;
+      }
+      .capability-row {
+        grid-template-columns: 2.5rem minmax(12rem, 0.6fr) 1fr;
+      }
+      .capability-row ul {
+        grid-column: 2 / -1;
+        justify-content: flex-start;
+        padding-bottom: 1.25rem;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .section-shell,
+      .site-header {
+        width: min(100% - 2rem, 86rem);
+      }
+      .site-header {
+        min-height: 4.75rem;
+      }
+      .hero {
+        min-height: 0;
+        grid-template-columns: 1fr;
+        gap: 3.5rem;
+        padding: 3rem 1rem 5rem;
+      }
+      h1 {
+        font-size: clamp(3.8rem, 17vw, 5rem);
+      }
+      .hero-lede {
+        font-size: 1rem;
+      }
+      .hero-links a {
+        width: 3rem;
+        padding: 0;
+        justify-content: center;
+        font-size: 0;
+      }
+      .cycle-stage {
+        min-height: 27rem;
+      }
+      .cycle-wheel {
+        --radius: 9.7rem;
+        width: 21rem;
+      }
+      .cycle-node {
+        width: 4.25rem;
+        height: 4.25rem;
+      }
+      .node-inner small {
+        font-size: 0.52rem;
+      }
+      .node-inner strong {
+        font-size: 0.54rem;
+      }
+      .cycle-core {
+        width: 9.25rem;
+        min-height: 9.25rem;
+        padding: 1rem;
+      }
+      .cycle-core > strong {
+        font-size: 0.72rem;
+      }
+      .cycle-core > small {
+        display: none;
+      }
+      .perspective {
+        padding-top: 5rem;
+      }
+      blockquote {
+        font-size: clamp(2.6rem, 9vw, 3.5rem);
+      }
+      blockquote span,
+      blockquote em {
+        white-space: normal;
+      }
+      .principles {
+        grid-template-columns: 1fr;
+        margin-top: 4.5rem;
+      }
+      .principles > div,
+      .principles > div + div {
+        min-height: 0;
+        border-right: 0;
+        border-bottom: 1px solid rgba(19, 24, 23, 0.16);
+        padding: 1.5rem 0 2rem;
+      }
+      .systems {
+        padding: 5rem 0 4rem;
+      }
+      .systems-header {
+        gap: 2rem;
+        margin-bottom: 3rem;
+      }
+      .systems-header h2 {
+        font-size: clamp(3.4rem, 14vw, 4.7rem);
+      }
+      .capability-row {
+        grid-template-columns: 2.25rem 1fr;
+        gap: 1rem;
+        padding: 1.6rem 0;
+      }
+      .capability-row h3 {
+        font-size: 1.55rem;
+      }
+      .capability-row > p,
+      .capability-row ul {
+        grid-column: 2;
+      }
+      .capability-row ul {
+        padding: 0;
+      }
+      .capability-row:hover {
+        padding-inline: 0;
+      }
+      .closing {
+        padding: 5rem 0;
+      }
+      .closing-line {
+        font-size: clamp(3.6rem, 15vw, 5rem);
+      }
+      .closing-mobile-break {
+        display: initial;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+      .footer-grid > p {
+        text-align: left;
+      }
+      .footer-grid nav {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      :global(html) {
+        scroll-behavior: auto;
+      }
+      .cycle-wheel,
+      .node-inner {
+        transition: none;
+      }
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+
+  <script>
+    import { animate, stagger } from 'motion';
+
+    const reducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    const wheel = document.querySelector('[data-cycle-wheel]');
+    const nodes = Array.from(document.querySelectorAll('[data-cycle-node]'));
+    const cycleSteps = nodes.map((node) => ({
+      number: node.getAttribute('data-number') ?? '',
+      label: node.getAttribute('data-label') ?? '',
+      detail: node.getAttribute('data-detail') ?? '',
+    }));
+    const cycleConsole = document.querySelector('[data-cycle-console]');
+    const cycleCore = document.querySelector('[data-cycle-core]');
+    const activeNumber = document.querySelector('[data-active-number]');
+    const activeLabel = document.querySelector('[data-active-label]');
+    const activeDetail = document.querySelector('[data-active-detail]');
+    const cycleCleanupKey = '__gtmCycleCleanup';
+    const previousCycleCleanup = Reflect.get(window, cycleCleanupKey);
+    if (typeof previousCycleCleanup === 'function') previousCycleCleanup();
+    const cycleController = new AbortController();
+    const cycleEventOptions = { signal: cycleController.signal };
+    let activeIndex = 0;
+    let rotationPosition = 0;
+    let timer: number | undefined;
+    let pointerPaused = false;
+    let focusPaused = false;
+    let revealObserver: IntersectionObserver | undefined;
+
+    const renderCycle = (nextIndex: number) => {
+      const normalizedIndex =
+        (nextIndex + cycleSteps.length) % cycleSteps.length;
+      const forwardDistance =
+        (normalizedIndex - activeIndex + cycleSteps.length) % cycleSteps.length;
+      rotationPosition += forwardDistance;
+      activeIndex = normalizedIndex;
+      const step = cycleSteps[activeIndex];
+      const rotation = rotationPosition * -60;
+      const counter = rotationPosition * 60;
+
+      if (wheel instanceof HTMLElement) {
+        wheel.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+        wheel.style.setProperty('--counter', `${counter}deg`);
+      }
+
+      nodes.forEach((node, index) => {
+        node.setAttribute(
+          'data-active',
+          index === activeIndex ? 'true' : 'false',
+        );
+        node.setAttribute(
+          'data-complete',
+          index < activeIndex ? 'true' : 'false',
+        );
+        node.setAttribute(
+          'aria-pressed',
+          index === activeIndex ? 'true' : 'false',
+        );
+      });
+
+      if (activeNumber) activeNumber.textContent = step.number;
+      if (activeLabel) activeLabel.textContent = step.label;
+      if (activeDetail) activeDetail.textContent = step.detail;
+
+      if (!reducedMotion) {
+        animate(
+          [activeNumber, activeLabel, activeDetail].filter(Boolean),
+          { y: [7, 0] },
+          { duration: 0.42, delay: stagger(0.05) },
+        );
+      }
+    };
+
+    const isCyclePaused = () => pointerPaused || focusPaused;
+    const stopCycle = () => {
+      window.clearTimeout(timer);
+      timer = undefined;
+    };
+    const startCycle = () => {
+      stopCycle();
+      if (reducedMotion || isCyclePaused()) return;
+
+      timer = window.setTimeout(() => {
+        timer = undefined;
+        if (isCyclePaused()) return;
+        renderCycle(activeIndex + 1);
+        startCycle();
+      }, 5000);
+    };
+
+    nodes.forEach((node) => {
+      node.addEventListener(
+        'click',
+        () => {
+          renderCycle(Number(node.getAttribute('data-index') ?? 0));
+          startCycle();
+        },
+        cycleEventOptions,
+      );
+    });
+    cycleCore?.addEventListener(
+      'click',
+      () => {
+        renderCycle(activeIndex + 1);
+        startCycle();
+      },
+      cycleEventOptions,
+    );
+    cycleCore?.addEventListener(
+      'pointerenter',
+      () => {
+        pointerPaused = true;
+        stopCycle();
+      },
+      cycleEventOptions,
+    );
+    cycleCore?.addEventListener(
+      'pointerleave',
+      () => {
+        pointerPaused = false;
+        startCycle();
+      },
+      cycleEventOptions,
+    );
+    cycleConsole?.addEventListener(
+      'focusin',
+      (event) => {
+        focusPaused =
+          event.target instanceof Element &&
+          event.target.matches(':focus-visible');
+        if (focusPaused) stopCycle();
+      },
+      cycleEventOptions,
+    );
+    cycleConsole?.addEventListener(
+      'focusout',
+      () => {
+        focusPaused = false;
+        queueMicrotask(startCycle);
+      },
+      cycleEventOptions,
+    );
+    renderCycle(0);
+    startCycle();
+
+    const cleanupCycle = () => {
+      stopCycle();
+      cycleController.abort();
+      revealObserver?.disconnect();
+      if (Reflect.get(window, cycleCleanupKey) === cleanupCycle)
+        Reflect.deleteProperty(window, cycleCleanupKey);
+    };
+    Reflect.set(window, cycleCleanupKey, cleanupCycle);
+    import.meta.hot?.dispose(cleanupCycle);
+
+    if (!reducedMotion) {
+      const enterTargets = Array.from(
+        document.querySelectorAll('[data-enter]'),
+      );
+      animate(
+        enterTargets,
+        { y: [14, 0] },
+        { duration: 0.7, delay: stagger(0.08), ease: [0.22, 1, 0.36, 1] },
+      );
+
+      const revealTargets = Array.from(
+        document.querySelectorAll('[data-reveal]'),
+      );
+      revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            revealObserver?.unobserve(entry.target);
+            animate(
+              entry.target,
+              { y: [20, 0] },
+              { duration: 0.68, ease: [0.22, 1, 0.36, 1] },
+            );
+          });
+        },
+        { threshold: 0.12, rootMargin: '0px 0px -6% 0px' },
+      );
+      revealTargets.forEach((target) => revealObserver?.observe(target));
+    }
+  </script>
+</Layout>

@@ -1,24 +1,45 @@
-# build output
+# build output and generated types
 dist/
-# generated types
 .astro/
+
+# local browser and test artifacts
+.playwright-cli/
+coverage/
+output/
+playwright-report/
+test-results/
 
 # dependencies
 node_modules/
+.pnpm-store/
 
-# logs
+# caches and logs
+.cache/
+.eslintcache
+*.log
+*.tsbuildinfo
 npm-debug.log*
+pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 
-
-# environment variables
+# local configuration and secrets
 .env
-.env.production
+.env.*
+!.env.example
+.envrc
+.direnv/
 
-# macOS-specific files
-.DS_Store
-
-# jetbrains setting folder
+# editor settings
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
 .idea/
+
+# operating-system files
+.DS_Store
+Thumbs.db
+
+# deployment tooling
+.netlify/
+.vercel/

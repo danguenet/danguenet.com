@@ -1,0 +1,804 @@
+<div class="solar-system" data-solar-system aria-hidden="true">
+  <canvas data-solar-canvas></canvas>
+  <div class="solar-haze"></div>
+</div>
+
+<style>
+  .solar-system {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    overflow: hidden;
+    background:
+      radial-gradient(
+        circle at 74% 48%,
+        rgba(38, 135, 119, 0.13),
+        transparent 24%
+      ),
+      radial-gradient(
+        circle at 58% 105%,
+        rgba(27, 91, 82, 0.12),
+        transparent 38%
+      ),
+      linear-gradient(135deg, #06100f 0%, #071311 54%, #040b0a 100%);
+    pointer-events: none;
+  }
+
+  canvas {
+    width: 100%;
+    height: 100%;
+    opacity: 0.94;
+  }
+
+  .solar-system::before {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    background:
+      linear-gradient(
+        90deg,
+        rgba(6, 16, 15, 0.98) 0%,
+        rgba(6, 16, 15, 0.83) 27%,
+        rgba(6, 16, 15, 0.18) 58%,
+        transparent 76%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(6, 16, 15, 0.26),
+        transparent 22%,
+        transparent 76%,
+        rgba(6, 16, 15, 0.72)
+      );
+    content: '';
+  }
+
+  .solar-system::after {
+    position: absolute;
+    z-index: 3;
+    inset: -1px;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 42%,
+      rgba(2, 8, 7, 0.44) 100%
+    );
+    content: '';
+  }
+
+  .solar-haze {
+    position: absolute;
+    z-index: 1;
+    top: var(--solar-center-y, 36%);
+    left: var(--solar-center-x, 46%);
+    width: min(54vw, 48rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(94, 230, 207, 0.075),
+      rgba(94, 230, 207, 0.018) 37%,
+      transparent 68%
+    );
+    filter: blur(18px);
+    transform: translate(-50%, -50%);
+  }
+
+  @media (max-width: 700px) {
+    .solar-system::before {
+      background:
+        linear-gradient(
+          180deg,
+          rgba(6, 16, 15, 0.96) 0%,
+          rgba(6, 16, 15, 0.7) 28%,
+          rgba(6, 16, 15, 0.08) 55%,
+          rgba(6, 16, 15, 0.68) 100%
+        ),
+        linear-gradient(90deg, rgba(6, 16, 15, 0.56), transparent 65%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    canvas {
+      opacity: 0.72;
+    }
+  }
+</style>
+
+<script>
+  type Orbit = {
+    orbit: number;
+    squash: number;
+    tilt: number;
+  };
+
+  type Planet = Orbit & {
+    size: number;
+    speed: number;
+    phase: number;
+    light: string;
+    dark: string;
+    moon?: boolean;
+    ring?: boolean;
+  };
+
+  type OrbitPoint = {
+    x: number;
+    y: number;
+    depth: number;
+  };
+
+  type TrailPoint = {
+    x: number;
+    y: number;
+    born: number;
+  };
+
+  type ShootingStar = TrailPoint & {
+    vx: number;
+    vy: number;
+    duration: number;
+    ambient?: boolean;
+  };
+
+  const root = document.querySelector('[data-solar-system]');
+  const canvas = root?.querySelector('[data-solar-canvas]');
+
+  if (root instanceof HTMLElement && canvas instanceof HTMLCanvasElement) {
+    const solarCleanupKey = '__solarSystemCleanup';
+    const previousSolarCleanup = Reflect.get(window, solarCleanupKey);
+    if (typeof previousSolarCleanup === 'function') previousSolarCleanup();
+    const solarController = new AbortController();
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Canvas 2D context is unavailable.');
+    const reduceMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    const cycleCore = document.querySelector('[data-cycle-core]');
+    const heroCopy = document.querySelector('.hero-copy');
+    const cycleStage = document.querySelector('.cycle-stage');
+    const TAU = Math.PI * 2;
+    let width = 0;
+    let height = 0;
+    let pixelRatio = 1;
+    let centerX = 0;
+    let centerY = 0;
+    let systemScale = 1;
+    let frame = 0;
+    let isVisible = true;
+    let guideTargetX = 0;
+    let guideTargetY = 0;
+    let guideX = 0;
+    let guideY = 0;
+    let guideOpacity = 0;
+    let guideActive = false;
+    let guideReleasedUntil = 0;
+    let lastTrailTime = 0;
+    let guideTrail: TrailPoint[] = [];
+    let shootingStars: ShootingStar[] = [];
+    let shootingStarTarget = 2;
+    let nextShootingStarTargetChange = 0;
+    const shootingStarMinimum = 1;
+    const shootingStarMaximum = 3;
+
+    const seededRandom = (() => {
+      let seed = 928371;
+      return () => {
+        seed = (seed * 1664525 + 1013904223) % 4294967296;
+        return seed / 4294967296;
+      };
+    })();
+
+    const stars = Array.from({ length: 280 }, () => ({
+      x: seededRandom(),
+      y: seededRandom(),
+      size: 0.3 + seededRandom() * 1.15,
+      depth: 0.25 + seededRandom() * 0.75,
+      phase: seededRandom() * TAU,
+      warmth: seededRandom(),
+      glint: seededRandom() > 0.965,
+    }));
+
+    const planets: Planet[] = [
+      {
+        orbit: 88,
+        squash: 0.48,
+        tilt: -0.12,
+        size: 4.2,
+        speed: 0.165,
+        phase: 0.35,
+        light: '#a6fff0',
+        dark: '#1f7d70',
+      },
+      {
+        orbit: 138,
+        squash: 0.54,
+        tilt: -0.16,
+        size: 7,
+        speed: 0.105,
+        phase: 2.15,
+        light: '#e8c481',
+        dark: '#895b33',
+      },
+      {
+        orbit: 201,
+        squash: 0.43,
+        tilt: -0.1,
+        size: 9,
+        speed: 0.071,
+        phase: 4.45,
+        light: '#7fe3d3',
+        dark: '#1b625f',
+        moon: true,
+      },
+      {
+        orbit: 278,
+        squash: 0.5,
+        tilt: -0.2,
+        size: 6.2,
+        speed: 0.046,
+        phase: 1.2,
+        light: '#df8b6d',
+        dark: '#713d37',
+      },
+      {
+        orbit: 372,
+        squash: 0.4,
+        tilt: -0.13,
+        size: 15,
+        speed: 0.027,
+        phase: 3.55,
+        light: '#c7d7bf',
+        dark: '#586d66',
+        ring: true,
+      },
+      {
+        orbit: 458,
+        squash: 0.46,
+        tilt: -0.18,
+        size: 7.5,
+        speed: 0.019,
+        phase: 5.45,
+        light: '#7ab5c4',
+        dark: '#324f61',
+      },
+    ];
+
+    const orbitPoint = (planet: Orbit, angle: number): OrbitPoint => {
+      const radius = planet.orbit * systemScale;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius * planet.squash;
+      const cosine = Math.cos(planet.tilt);
+      const sine = Math.sin(planet.tilt);
+      return {
+        x: centerX + x * cosine - y * sine,
+        y: centerY + x * sine + y * cosine,
+        depth: (Math.sin(angle) + 1) / 2,
+      };
+    };
+
+    const resize = () => {
+      const bounds = root.getBoundingClientRect();
+      width = Math.max(1, bounds.width);
+      height = Math.max(1, bounds.height);
+      pixelRatio = Math.min(window.devicePixelRatio || 1, 1.75);
+      canvas.width = Math.round(width * pixelRatio);
+      canvas.height = Math.round(height * pixelRatio);
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
+      const isSideBySide = width > 700;
+
+      if (isSideBySide) {
+        centerX = width * 0.46;
+        centerY = height * 0.4;
+      } else if (
+        width <= 700 &&
+        heroCopy instanceof HTMLElement &&
+        cycleStage instanceof HTMLElement
+      ) {
+        const copyBounds = heroCopy.getBoundingClientRect();
+        const stageBounds = cycleStage.getBoundingClientRect();
+        centerX = width * 0.5;
+        centerY = (copyBounds.bottom + stageBounds.top) / 2 - bounds.top;
+      } else if (cycleCore instanceof HTMLElement) {
+        const coreBounds = cycleCore.getBoundingClientRect();
+        centerX = coreBounds.left - bounds.left + coreBounds.width / 2;
+        centerY = coreBounds.top - bounds.top + coreBounds.height / 2;
+      } else {
+        centerX = width * 0.73;
+        centerY = height * 0.5;
+      }
+
+      const baseScale = Math.max(
+        0.62,
+        Math.min(1.18, Math.min(width / 900, height / 720)),
+      );
+      systemScale = isSideBySide ? baseScale * 0.94 : baseScale;
+      root.style.setProperty('--solar-center-x', `${centerX}px`);
+      root.style.setProperty('--solar-center-y', `${centerY}px`);
+      draw(reduceMotion ? 28 : performance.now() / 1000);
+    };
+
+    const drawStars = (time: number) => {
+      for (const star of stars) {
+        const x = star.x * width;
+        const y = star.y * height;
+        const twinkle =
+          0.38 + Math.sin(time * (0.45 + star.depth) + star.phase) * 0.2;
+        const alpha = Math.max(0.08, twinkle) * star.depth;
+        context.beginPath();
+        context.arc(x, y, star.size * star.depth, 0, TAU);
+        context.fillStyle =
+          star.warmth > 0.88
+            ? `rgba(232, 210, 168, ${alpha})`
+            : `rgba(174, 231, 220, ${alpha})`;
+        context.fill();
+
+        if (star.glint && star.depth > 0.62) {
+          const flare =
+            (2.5 + star.depth * 3.5) *
+            (0.72 + Math.sin(time * 0.7 + star.phase) * 0.18);
+          context.beginPath();
+          context.moveTo(x - flare, y);
+          context.lineTo(x + flare, y);
+          context.moveTo(x, y - flare * 0.65);
+          context.lineTo(x, y + flare * 0.65);
+          context.strokeStyle = `rgba(187, 244, 233, ${alpha * 0.45})`;
+          context.lineWidth = 0.55;
+          context.stroke();
+        }
+      }
+    };
+
+    const drawSun = (time: number) => {
+      const x = centerX;
+      const y = centerY;
+      const pulse = 1 + Math.sin(time * 0.65) * 0.035;
+      const halo = context.createRadialGradient(
+        x,
+        y,
+        0,
+        x,
+        y,
+        128 * systemScale * pulse,
+      );
+      halo.addColorStop(0, 'rgba(177, 255, 235, 0.58)');
+      halo.addColorStop(0.13, 'rgba(94, 230, 207, 0.25)');
+      halo.addColorStop(0.46, 'rgba(35, 151, 132, 0.095)');
+      halo.addColorStop(1, 'rgba(15, 77, 68, 0)');
+      context.fillStyle = halo;
+      context.fillRect(
+        x - 140 * systemScale,
+        y - 140 * systemScale,
+        280 * systemScale,
+        280 * systemScale,
+      );
+
+      const core = context.createRadialGradient(
+        x - 5,
+        y - 6,
+        2,
+        x,
+        y,
+        34 * systemScale,
+      );
+      core.addColorStop(0, 'rgba(238, 255, 249, 0.98)');
+      core.addColorStop(0.25, 'rgba(153, 255, 233, 0.92)');
+      core.addColorStop(0.7, 'rgba(63, 200, 177, 0.64)');
+      core.addColorStop(1, 'rgba(35, 134, 117, 0)');
+      context.beginPath();
+      context.arc(x, y, 35 * systemScale * pulse, 0, TAU);
+      context.fillStyle = core;
+      context.shadowColor = 'rgba(94, 230, 207, 0.6)';
+      context.shadowBlur = 24 * systemScale;
+      context.fill();
+      context.shadowBlur = 0;
+    };
+
+    const drawOrbit = (planet: Planet, planetAngle: number) => {
+      context.beginPath();
+      for (let pointIndex = 0; pointIndex <= 150; pointIndex += 1) {
+        const point = orbitPoint(planet, (pointIndex / 150) * TAU);
+        if (pointIndex === 0) context.moveTo(point.x, point.y);
+        else context.lineTo(point.x, point.y);
+      }
+      context.strokeStyle = 'rgba(111, 196, 181, 0.105)';
+      context.lineWidth = 0.75;
+      context.stroke();
+
+      context.beginPath();
+      for (let pointIndex = 0; pointIndex <= 24; pointIndex += 1) {
+        const offset = (pointIndex / 24 - 0.5) * 0.62;
+        const point = orbitPoint(planet, planetAngle + offset);
+        if (pointIndex === 0) context.moveTo(point.x, point.y);
+        else context.lineTo(point.x, point.y);
+      }
+      const trail = context.createLinearGradient(
+        orbitPoint(planet, planetAngle - 0.31).x,
+        orbitPoint(planet, planetAngle - 0.31).y,
+        orbitPoint(planet, planetAngle + 0.31).x,
+        orbitPoint(planet, planetAngle + 0.31).y,
+      );
+      trail.addColorStop(0, 'rgba(94, 230, 207, 0)');
+      trail.addColorStop(0.72, 'rgba(94, 230, 207, 0.14)');
+      trail.addColorStop(1, 'rgba(174, 255, 237, 0.48)');
+      context.strokeStyle = trail;
+      context.lineWidth = 1;
+      context.stroke();
+    };
+
+    const drawPlanet = (planet: Planet, point: OrbitPoint, time: number) => {
+      const radius = planet.size * systemScale * (0.78 + point.depth * 0.32);
+
+      if (planet.ring) {
+        context.save();
+        context.translate(point.x, point.y);
+        context.rotate(-0.23);
+        context.scale(1, 0.32);
+        context.beginPath();
+        context.arc(0, 0, radius * 1.85, 0, TAU);
+        context.strokeStyle = 'rgba(196, 224, 212, 0.35)';
+        context.lineWidth = Math.max(1, radius * 0.24);
+        context.stroke();
+        context.restore();
+      }
+
+      const sphere = context.createRadialGradient(
+        point.x - radius * 0.42,
+        point.y - radius * 0.5,
+        radius * 0.08,
+        point.x,
+        point.y,
+        radius,
+      );
+      sphere.addColorStop(0, '#f2fff9');
+      sphere.addColorStop(0.18, planet.light);
+      sphere.addColorStop(0.66, planet.dark);
+      sphere.addColorStop(1, '#07110f');
+      context.beginPath();
+      context.arc(point.x, point.y, radius, 0, TAU);
+      context.fillStyle = sphere;
+      context.shadowColor = planet.light;
+      context.shadowBlur = 8 + radius * 0.7;
+      context.fill();
+      context.shadowBlur = 0;
+
+      context.beginPath();
+      context.arc(
+        point.x - radius * 0.18,
+        point.y - radius * 0.23,
+        radius * 0.72,
+        Math.PI * 0.86,
+        Math.PI * 1.7,
+      );
+      context.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+      context.lineWidth = Math.max(0.5, radius * 0.08);
+      context.stroke();
+
+      if (planet.moon) {
+        const moonAngle = time * 0.52;
+        const moonDistance = radius * 2.25;
+        const moonX = point.x + Math.cos(moonAngle) * moonDistance;
+        const moonY = point.y + Math.sin(moonAngle) * moonDistance * 0.42;
+        context.beginPath();
+        context.arc(moonX, moonY, Math.max(1, radius * 0.19), 0, TAU);
+        context.fillStyle = 'rgba(216, 232, 226, 0.72)';
+        context.fill();
+      }
+    };
+
+    const drawComet = (time: number) => {
+      const angle = time * 0.035 + 0.8;
+      const cometOrbit = { orbit: 528, squash: 0.32, tilt: -0.32 };
+      const head = orbitPoint(cometOrbit, angle);
+      const tail = orbitPoint(cometOrbit, angle - 0.12);
+      const gradient = context.createLinearGradient(
+        tail.x,
+        tail.y,
+        head.x,
+        head.y,
+      );
+      gradient.addColorStop(0, 'rgba(177, 255, 238, 0)');
+      gradient.addColorStop(1, 'rgba(209, 255, 245, 0.6)');
+      context.beginPath();
+      context.moveTo(tail.x, tail.y);
+      context.lineTo(head.x, head.y);
+      context.strokeStyle = gradient;
+      context.lineWidth = 1.1;
+      context.stroke();
+      context.beginPath();
+      context.arc(head.x, head.y, 1.5, 0, TAU);
+      context.fillStyle = 'rgba(232, 255, 250, 0.9)';
+      context.fill();
+    };
+
+    const drawGuideStar = (time: number) => {
+      guideX += (guideTargetX - guideX) * 0.012;
+      guideY += (guideTargetY - guideY) * 0.012;
+      guideOpacity += ((guideActive ? 1 : 0) - guideOpacity) * 0.06;
+
+      if (guideActive && time - lastTrailTime > 0.045) {
+        guideTrail.push({ x: guideX, y: guideY, born: time });
+        lastTrailTime = time;
+      }
+      guideTrail = guideTrail.filter((point) => time - point.born < 0.9);
+
+      for (const point of guideTrail) {
+        const age = (time - point.born) / 0.9;
+        context.beginPath();
+        context.arc(point.x, point.y, 0.7 + (1 - age) * 0.65, 0, TAU);
+        context.fillStyle = `rgba(174, 246, 232, ${(1 - age) * 0.24 * guideOpacity})`;
+        context.fill();
+      }
+
+      if (guideOpacity < 0.01 || time < guideReleasedUntil) return;
+
+      const pulse = 0.86 + Math.sin(time * 3.2) * 0.12;
+      const halo = context.createRadialGradient(
+        guideX,
+        guideY,
+        0,
+        guideX,
+        guideY,
+        18,
+      );
+      halo.addColorStop(0, `rgba(236, 255, 250, ${0.9 * guideOpacity})`);
+      halo.addColorStop(0.18, `rgba(126, 245, 221, ${0.48 * guideOpacity})`);
+      halo.addColorStop(1, 'rgba(94, 230, 207, 0)');
+      context.beginPath();
+      context.arc(guideX, guideY, 18, 0, TAU);
+      context.fillStyle = halo;
+      context.fill();
+
+      const flare = 6.5 * pulse;
+      context.beginPath();
+      context.moveTo(guideX - flare, guideY);
+      context.lineTo(guideX + flare, guideY);
+      context.moveTo(guideX, guideY - flare * 0.72);
+      context.lineTo(guideX, guideY + flare * 0.72);
+      context.strokeStyle = `rgba(221, 255, 248, ${0.64 * guideOpacity})`;
+      context.lineWidth = 0.65;
+      context.stroke();
+
+      context.beginPath();
+      context.arc(guideX, guideY, 1.45 * pulse, 0, TAU);
+      context.fillStyle = `rgba(244, 255, 252, ${0.95 * guideOpacity})`;
+      context.fill();
+    };
+
+    const createAmbientShootingStar = (time: number): ShootingStar => {
+      const duration = 1.4 + seededRandom() * 0.8;
+      const travel = Math.min(width * 0.38, 250 + seededRandom() * 150);
+      const angle =
+        (seededRandom() > 0.5 ? 1 : -1) * (0.12 + seededRandom() * 0.34);
+      const deltaX = Math.cos(angle) * travel;
+      const deltaY = Math.sin(angle) * travel;
+      const padding = 24;
+      const minimumX = padding - Math.min(0, deltaX);
+      const maximumX = Math.max(
+        minimumX,
+        width - padding - Math.max(0, deltaX),
+      );
+      const minimumY = padding - Math.min(0, deltaY);
+      const maximumY = Math.max(
+        minimumY,
+        height - padding - Math.max(0, deltaY),
+      );
+
+      return {
+        x: minimumX + seededRandom() * (maximumX - minimumX),
+        y: minimumY + seededRandom() * (maximumY - minimumY),
+        vx: deltaX / duration,
+        vy: deltaY / duration,
+        born: time - 0.08,
+        duration,
+        ambient: true,
+      };
+    };
+
+    const maintainShootingStars = (time: number) => {
+      shootingStars = shootingStars.filter((star) => {
+        const replacementLead = star.ambient ? 0.08 : 0;
+        return time - star.born < star.duration - replacementLead;
+      });
+
+      if (time >= nextShootingStarTargetChange) {
+        shootingStarTarget =
+          shootingStarMinimum +
+          Math.floor(
+            seededRandom() * (shootingStarMaximum - shootingStarMinimum + 1),
+          );
+        nextShootingStarTargetChange = time + 3.5 + seededRandom() * 3.5;
+      }
+
+      while (shootingStars.length < shootingStarTarget) {
+        shootingStars.push(createAmbientShootingStar(time));
+      }
+    };
+
+    const drawShootingStars = (time: number) => {
+      maintainShootingStars(time);
+
+      for (const star of shootingStars) {
+        const age = time - star.born;
+        const progress = age / star.duration;
+        const fadeIn = Math.min(1, age / 0.08);
+        const fadeOut = Math.min(1, (star.duration - age) / 0.28);
+        const fade = Math.max(0, Math.min(fadeIn, fadeOut));
+        const x = star.x + star.vx * age;
+        const y = star.y + star.vy * age;
+        const speed = Math.hypot(star.vx, star.vy);
+        const directionX = star.vx / speed;
+        const directionY = star.vy / speed;
+        const tailLength = star.ambient
+          ? 22 + progress * 18
+          : 58 + progress * 72;
+        const tailX = x - directionX * tailLength;
+        const tailY = y - directionY * tailLength;
+        const streak = context.createLinearGradient(tailX, tailY, x, y);
+        streak.addColorStop(0, 'rgba(94, 230, 207, 0)');
+        streak.addColorStop(
+          0.72,
+          `rgba(126, 245, 221, ${(star.ambient ? 0.12 : 0.25) * fade})`,
+        );
+        streak.addColorStop(
+          1,
+          `rgba(235, 255, 250, ${(star.ambient ? 0.52 : 0.9) * fade})`,
+        );
+        context.beginPath();
+        context.moveTo(tailX, tailY);
+        context.lineTo(x, y);
+        context.strokeStyle = streak;
+        context.lineWidth = star.ambient ? 0.7 : 1.25;
+        context.stroke();
+
+        context.beginPath();
+        context.arc(x, y, star.ambient ? 0.85 : 1.8, 0, TAU);
+        context.fillStyle = `rgba(244, 255, 252, ${(star.ambient ? 0.68 : 1) * fade})`;
+        context.shadowColor = 'rgba(94, 230, 207, 0.8)';
+        context.shadowBlur = star.ambient ? 3 : 10;
+        context.fill();
+        context.shadowBlur = 0;
+      }
+    };
+
+    const draw = (time: number) => {
+      if (!width || !height) return;
+      context.clearRect(0, 0, width, height);
+      drawStars(time);
+      drawSun(time);
+
+      const positionedPlanets = planets.map((planet) => {
+        const angle = planet.phase + time * planet.speed;
+        drawOrbit(planet, angle);
+        return { planet, point: orbitPoint(planet, angle) };
+      });
+
+      positionedPlanets
+        .sort((first, second) => first.point.depth - second.point.depth)
+        .forEach(({ planet, point }) => drawPlanet(planet, point, time));
+      drawComet(time);
+      drawGuideStar(time);
+      drawShootingStars(time);
+    };
+
+    const tick = (timestamp: number) => {
+      if (!isVisible || document.hidden) {
+        frame = 0;
+        return;
+      }
+      draw(timestamp / 1000);
+      frame = window.requestAnimationFrame(tick);
+    };
+
+    const startAnimation = () => {
+      if (!reduceMotion && isVisible && !document.hidden && !frame) {
+        frame = window.requestAnimationFrame(tick);
+      }
+    };
+
+    const handlePointer = (event: PointerEvent) => {
+      const bounds = root.getBoundingClientRect();
+      guideTargetX = event.clientX - bounds.left;
+      guideTargetY = event.clientY - bounds.top;
+      if (!guideActive) {
+        guideX = guideTargetX;
+        guideY = guideTargetY;
+      }
+      guideActive = true;
+    };
+
+    const releaseGuideStar = (event: MouseEvent) => {
+      if (
+        event.target instanceof Element &&
+        event.target.closest('a, button, summary')
+      )
+        return;
+      const bounds = root.getBoundingClientRect();
+      const clickX = event.clientX - bounds.left;
+      const clickY = event.clientY - bounds.top;
+      const startX = guideActive ? guideX : clickX;
+      const startY = guideActive ? guideY : clickY;
+      let directionX = clickX - centerX;
+      let directionY = clickY - centerY;
+      const magnitude = Math.hypot(directionX, directionY);
+
+      if (magnitude < 24) {
+        directionX = 1;
+        directionY = -0.35;
+      } else {
+        directionX /= magnitude;
+        directionY /= magnitude;
+      }
+
+      if (shootingStars.length >= shootingStarMaximum) shootingStars.shift();
+      shootingStars.push({
+        x: startX,
+        y: startY,
+        vx: directionX * 360,
+        vy: directionY * 360,
+        born: performance.now() / 1000,
+        duration: 1.2,
+      });
+      guideReleasedUntil = performance.now() / 1000 + 0.42;
+      guideTrail = [];
+    };
+
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(root);
+
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      isVisible = Boolean(entry?.isIntersecting);
+      if (!isVisible && frame) {
+        window.cancelAnimationFrame(frame);
+        frame = 0;
+      }
+      startAnimation();
+    });
+    visibilityObserver.observe(root);
+
+    if (!reduceMotion) {
+      const hero = root.closest('.hero');
+      if (hero instanceof HTMLElement) {
+        hero.addEventListener('pointermove', handlePointer, {
+          passive: true,
+          signal: solarController.signal,
+        });
+        hero.addEventListener(
+          'pointerleave',
+          () => {
+            guideActive = false;
+          },
+          { passive: true, signal: solarController.signal },
+        );
+        hero.addEventListener('click', releaseGuideStar, {
+          signal: solarController.signal,
+        });
+      }
+      startAnimation();
+    }
+
+    document.addEventListener(
+      'visibilitychange',
+      () => {
+        if (document.hidden && frame) {
+          window.cancelAnimationFrame(frame);
+          frame = 0;
+        }
+        startAnimation();
+      },
+      { signal: solarController.signal },
+    );
+
+    const cleanupSolarSystem = () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      frame = 0;
+      resizeObserver.disconnect();
+      visibilityObserver.disconnect();
+      solarController.abort();
+      if (Reflect.get(window, solarCleanupKey) === cleanupSolarSystem) {
+        Reflect.deleteProperty(window, solarCleanupKey);
+      }
+    };
+    Reflect.set(window, solarCleanupKey, cleanupSolarSystem);
+    import.meta.hot?.dispose(cleanupSolarSystem);
+  }
+</script>

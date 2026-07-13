@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="haze" cx="0" cy="0" r="1" gradientTransform="translate(948 306) rotate(90) scale(344 420)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2b9b88" stop-opacity="0.3"/>
+      <stop offset="0.55" stop-color="#0c2b26" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#06100f" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="sun" cx="0" cy="0" r="1" gradientTransform="translate(952 304) rotate(90) scale(54)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#effffb"/>
+      <stop offset="0.28" stop-color="#98f7e6"/>
+      <stop offset="0.72" stop-color="#3cc4ad"/>
+      <stop offset="1" stop-color="#197768" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="edge" x1="32" y1="32" x2="1168" y2="598" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5ee6cf" stop-opacity="0.42"/>
+      <stop offset="0.52" stop-color="#5ee6cf" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#5ee6cf" stop-opacity="0.26"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#06100f"/>
+  <rect width="1200" height="630" fill="url(#haze)"/>
+  <rect x="32.5" y="32.5" width="1135" height="565" rx="16" fill="none" stroke="url(#edge)"/>
+
+  <g fill="#b7d8d1" opacity="0.66">
+    <circle cx="700" cy="98" r="1.5"/><circle cx="764" cy="179" r="1"/><circle cx="818" cy="78" r="1"/>
+    <circle cx="874" cy="139" r="1.4"/><circle cx="1038" cy="88" r="1"/><circle cx="1102" cy="166" r="1.6"/>
+    <circle cx="737" cy="348" r="1"/><circle cx="797" cy="495" r="1.4"/><circle cx="876" cy="550" r="1"/>
+    <circle cx="1068" cy="498" r="1.2"/><circle cx="1128" cy="406" r="1"/>
+  </g>
+
+  <g fill="none" stroke="#5ee6cf">
+    <ellipse cx="952" cy="304" rx="232" ry="112" stroke-opacity="0.16" stroke-width="2" transform="rotate(-14 952 304)"/>
+    <ellipse cx="952" cy="304" rx="166" ry="76" stroke-opacity="0.28" stroke-width="2" transform="rotate(-14 952 304)"/>
+    <ellipse cx="952" cy="304" rx="98" ry="44" stroke-opacity="0.38" stroke-width="2" transform="rotate(-14 952 304)"/>
+  </g>
+  <circle cx="952" cy="304" r="58" fill="url(#sun)"/>
+  <circle cx="952" cy="304" r="13" fill="#dcfff6"/>
+  <circle cx="1086" cy="231" r="12" fill="#7fe3d3"/>
+  <circle cx="1082" cy="227" r="4" fill="#edfffa" fill-opacity="0.8"/>
+  <circle cx="804" cy="369" r="8" fill="#df8b6d"/>
+  <circle cx="742" cy="236" r="5" fill="#e8c481"/>
+
+  <text x="96" y="119" fill="#5ee6cf" font-family="Menlo, Monaco, monospace" font-size="21" font-weight="700" letter-spacing="4">DANIEL GUENET</text>
+  <text x="92" y="245" fill="#f2efe8" font-family="Georgia, 'Times New Roman', serif" font-size="84" letter-spacing="-3">Building better</text>
+  <text x="92" y="338" fill="#f2efe8" font-family="Georgia, 'Times New Roman', serif" font-size="84" letter-spacing="-3">GTM systems<tspan fill="#5ee6cf">.</tspan></text>
+  <text x="98" y="415" fill="#98a6a1" font-family="Arial, Helvetica, sans-serif" font-size="24">Strategy · Workflows · Data · Automation · AI</text>
+
+  <line x1="96" y1="502" x2="598" y2="502" stroke="#5ee6cf" stroke-opacity="0.18"/>
+  <text x="96" y="547" fill="#d4ddd9" font-family="Menlo, Monaco, monospace" font-size="18" letter-spacing="2">DANGUENET.COM</text>
+</svg>

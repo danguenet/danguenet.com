@@ -1,0 +1,10 @@
+.astro/
+.playwright-cli/
+coverage/
+dist/
+node_modules/
+output/
+playwright-report/
+pnpm-lock.yaml
+public/favicon.png
+test-results/
