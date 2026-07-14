@@ -108,3 +108,57 @@ test('mobile layout has no horizontal overflow', async ({ page }) => {
   );
   expect(hasNoOverflow).toBe(true);
 });
+
+test('responsive refinements render consistently at every size', async ({
+  page,
+}) => {
+  const viewports = [
+    { width: 390, height: 844 },
+    { width: 768, height: 1024 },
+    { width: 1440, height: 1000 },
+  ];
+
+  await page.setViewportSize(viewports[0]);
+  await page.goto('/');
+
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+
+    for (const link of await page.locator('.hero-links a').all()) {
+      const linkBox = await link.boundingBox();
+      const iconBox = await link.locator('svg').boundingBox();
+      expect(linkBox).not.toBeNull();
+      expect(iconBox).not.toBeNull();
+      if (viewport.width <= 700) {
+        expect(
+          Math.abs(
+            linkBox.x + linkBox.width / 2 - (iconBox.x + iconBox.width / 2),
+          ),
+        ).toBeLessThan(1);
+      }
+      expect(
+        Math.abs(
+          linkBox.y + linkBox.height / 2 - (iconBox.y + iconBox.height / 2),
+        ),
+      ).toBeLessThan(1);
+    }
+
+    const phrases = await page.locator('.closing-phrase').all();
+    const phraseBoxes = await Promise.all(
+      phrases.map((phrase) => phrase.boundingBox()),
+    );
+    expect(phraseBoxes).toHaveLength(3);
+    expect(
+      phraseBoxes[1].y - (phraseBoxes[0].y + phraseBoxes[0].height),
+    ).toBeGreaterThan(10);
+    expect(
+      phraseBoxes[2].y - (phraseBoxes[1].y + phraseBoxes[1].height),
+    ).toBeGreaterThan(10);
+  }
+
+  await page.setViewportSize(viewports[0]);
+  await expect(page.locator('.footer-grid > p')).toBeHidden();
+  await page.setViewportSize(viewports[2]);
+  await expect(page.locator('.footer-grid > p')).toBeVisible();
+  await expect(page.locator('.hero-links a').first()).toContainText('LinkedIn');
+});

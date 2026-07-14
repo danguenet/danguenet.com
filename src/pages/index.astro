@@ -115,21 +115,23 @@ const capabilities = [
               href="https://www.linkedin.com/in/danguenet/"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="LinkedIn"
             >
               <svg viewBox="0 0 448 512" aria-hidden="true"
                 ><path d={linkedinPath} fill="currentColor"></path></svg
               >
-              LinkedIn
+              <span>LinkedIn</span>
             </a>
             <a
               href="https://github.com/danguenet"
               target="_blank"
               rel="noopener noreferrer"
+              aria-label="GitHub"
             >
               <svg viewBox="0 0 496 512" aria-hidden="true"
                 ><path d={githubPath} fill="currentColor"></path></svg
               >
-              GitHub
+              <span>GitHub</span>
             </a>
           </div>
         </div>
@@ -265,9 +267,15 @@ const capabilities = [
         <div class="section-shell" data-reveal>
           <p class="eyebrow dark-eyebrow"><span></span> The Impact</p>
           <p class="closing-line">
-            People <br class="closing-mobile-break" /> aligned.<br />
-            Work <br class="closing-mobile-break" /> connected.<br />
-            <em>Always <br class="closing-mobile-break" /> improving.</em>
+            <span class="closing-phrase"
+              >People <br class="closing-mobile-break" /> aligned.</span
+            >
+            <span class="closing-phrase"
+              >Work <br class="closing-mobile-break" /> connected.</span
+            >
+            <em class="closing-phrase"
+              >Always <br class="closing-mobile-break" /> improving.</em
+            >
           </p>
         </div>
       </section>
@@ -435,8 +443,10 @@ const capabilities = [
       transform: translateY(-2px);
     }
     .hero-links svg {
+      display: block;
       width: 1rem;
       height: 1rem;
+      flex: none;
     }
 
     .cycle-console {
@@ -718,14 +728,19 @@ const capabilities = [
       color: var(--paper-ink);
     }
     .closing-line {
+      display: grid;
       max-width: 14ch;
       margin: 0 auto;
       font: 400 clamp(4rem, 7.2vw, 8rem)/0.95 var(--display);
       letter-spacing: -0.06em;
+      row-gap: 0.3em;
       text-align: center;
     }
     .closing-mobile-break {
       display: none;
+    }
+    .closing-phrase {
+      display: block;
     }
     .closing-line em {
       color: #0c7768;
@@ -847,9 +862,12 @@ const capabilities = [
       }
       .hero-links a {
         width: 3rem;
+        gap: 0;
         padding: 0;
         justify-content: center;
-        font-size: 0;
+      }
+      .hero-links a span {
+        display: none;
       }
       .cycle-stage {
         min-height: 27rem;
@@ -941,7 +959,7 @@ const capabilities = [
         grid-template-columns: 1fr;
       }
       .footer-grid > p {
-        text-align: left;
+        display: none;
       }
       .footer-grid nav {
         justify-content: flex-start;
