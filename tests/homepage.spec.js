@@ -112,6 +112,8 @@ test('mobile layout has no horizontal overflow', async ({ page }) => {
 test('responsive refinements render consistently at every size', async ({
   page,
 }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+
   const viewports = [
     { width: 390, height: 844 },
     { width: 768, height: 1024 },
